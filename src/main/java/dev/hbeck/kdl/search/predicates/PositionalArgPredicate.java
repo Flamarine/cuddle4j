@@ -19,8 +19,8 @@ public class PositionalArgPredicate implements NodeContentPredicate {
 
     @Override
     public boolean test(KDLNode node) {
-        if (position < node.getArgs().size()) {
-            return predicate.test(node.getArgs().get(position));
+        if (position < node.args().size()) {
+            return predicate.test(node.args().get(position));
         } else {
             return false;
         }

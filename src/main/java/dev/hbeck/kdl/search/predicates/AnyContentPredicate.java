@@ -8,8 +8,8 @@ import dev.hbeck.kdl.objects.KDLNode;
 public class AnyContentPredicate implements NodeContentPredicate {
     @Override
     public boolean test(KDLNode node) {
-        return !node.getArgs().isEmpty()
-                || !node.getProps().isEmpty()
-                || (node.getChild().isPresent() && !node.getChild().get().getNodes().isEmpty());
+        return !node.args().isEmpty()
+                || !node.props().isEmpty()
+                || (node.child().isPresent() && !node.child().get().nodes().isEmpty());
     }
 }

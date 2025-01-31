@@ -16,23 +16,10 @@ public class CharClasses {
      * @return true if the character is valid, false otherwise
      */
     public static boolean isValidNumericStart(int c) {
-        switch (c) {
-            case '+':
-            case '-':
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case '+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -46,45 +33,12 @@ public class CharClasses {
             return false;
         }
 
-        switch (c) {
-            case '\u0085':
-            case '\u2028':
-            case '\u2029':
-            case '\\':
-            case '/':
-            case '(':
-            case ')':
-            case '{':
-            case '}':
-            case '<':
-            case '>':
-            case ';':
-            case '[':
-            case ']':
-            case '=':
-            case ',':
-            case '"':
-            case '\u00A0':
-            case '\u1680':
-            case '\u2000':
-            case '\u2001':
-            case '\u2002':
-            case '\u2003':
-            case '\u2004':
-            case '\u2005':
-            case '\u2006':
-            case '\u2007':
-            case '\u2008':
-            case '\u2009':
-            case '\u200A':
-            case '\u202F':
-            case '\u205F':
-            case '\u3000':
-            case '\uFEFF':
-                return false;
-            default:
-                return true;
-        }
+        return switch (c) {
+            case '\u0085', '\u2028', '\u2029', '\\', '/', '(', ')', '{', '}', '<', '>', ';', '[', ']', '=', ',', '"',
+                 '\u00A0', '\u1680', '\u2000', '\u2001', '\u2002', '\u2003', '\u2004', '\u2005', '\u2006', '\u2007',
+                 '\u2008', '\u2009', '\u200A', '\u202F', '\u205F', '\u3000', '\uFEFF' -> false;
+            default -> true;
+        };
     }
 
     /**
@@ -139,33 +93,11 @@ public class CharClasses {
      * @return true if the character is valid, false otherwise
      */
     public static boolean isValidHexChar(int c) {
-        switch (c) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case 'A':
-            case 'a':
-            case 'B':
-            case 'b':
-            case 'C':
-            case 'c':
-            case 'D':
-            case 'd':
-            case 'E':
-            case 'e':
-            case 'F':
-            case 'f':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e',
+                 'F', 'f' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -195,20 +127,24 @@ public class CharClasses {
      * @return true if the character appears in a literal, false otherwise
      */
     public static boolean isLiteralChar(int c) {
-        switch (c) {
-            case 't':
-            case 'r':
-            case 'u':
-            case 'e':
-            case 'n':
-            case 'l':
-            case 'f':
-            case 'a':
-            case 's':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case 't', 'r', 'u', 'e', 'n', 'l', 'f', 'a', 's' -> true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Check if the character is contained in one of the six keywords:
+     * true, false, null, inf, -inf, and nan
+     *
+     * @param c the character to check
+     * @return true if the character appears in a keyword, false otherwise
+     */
+    public static boolean isKeywordChar(int c) {
+        return isLiteralChar(c) || switch (c) {
+            case 'i', 'n', 'f', '-', 'a' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -271,6 +207,10 @@ public class CharClasses {
      */
     public static boolean isPrintableAscii(int c) {
         return ' ' <= c && c <= '~';
+    }
+
+    public static boolean isReservedKeyword(String str) {
+        return str.matches("^(true|false|null|inf|-inf|nan)$");
     }
 
     public static boolean isNonAscii(int c) {

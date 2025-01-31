@@ -18,10 +18,10 @@ public class ChildPredicate implements NodeContentPredicate {
     @Override
     public boolean test(KDLNode node) {
         if (!search.isPresent()) {
-            return !node.getChild().isPresent() || node.getChild().get().getNodes().isEmpty();
+            return !node.child().isPresent() || node.child().get().nodes().isEmpty();
         }
 
-        return node.getChild().map(ch -> search.get().anyMatch(ch)).orElse(false);
+        return node.child().map(ch -> search.get().anyMatch(ch)).orElse(false);
     }
 
     public static ChildPredicate empty() {

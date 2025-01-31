@@ -4,13 +4,13 @@ import dev.hbeck.kdl.print.PrintConfig;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * A model object representing the KDL 'null' value.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class KDLNull extends KDLValue<Void> {
     public KDLNull() {
         this(Optional.empty());

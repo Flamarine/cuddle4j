@@ -15,7 +15,12 @@ import java.util.Optional;
  * either {@link BigDecimal} (for decimal) or {@link BigInteger} (for non-decimal), so if you <i>absolutely</i> need
  * that precision then don't hesitate to instanceof and cast.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class KDLNumber extends KDLValue<Number> {
+    public static final KDLNumber POSITIVE_INFINITY = new KDLNumber(Float.POSITIVE_INFINITY, 10, Optional.empty());
+    public static final KDLNumber NEGATIVE_INFINITY = new KDLNumber(Float.NEGATIVE_INFINITY, 10, Optional.empty());
+    public static final KDLNumber NaN = new KDLNumber(Float.NaN, 10, Optional.empty());
+
     private final Number value;
     private final int radix;
 
@@ -66,6 +71,16 @@ public class KDLNumber extends KDLValue<Number> {
 
     @Override
     protected void writeKDLValue(Writer writer, PrintConfig printConfig) throws IOException {
+        if (value instanceof Float f) {
+            if (f.isNaN()) {
+                writer.write("#nan");
+                return;
+            } else if (f.isInfinite()) {
+                writer.write(f > 0 ? "#inf": "#-inf");
+                return;
+            }
+        }
+
         if (printConfig.shouldRespectRadix()) {
             /*
             Print out a number while respecting radix!
@@ -111,15 +126,10 @@ public class KDLNumber extends KDLValue<Number> {
         return zero(radix, Optional.empty());
     }
     public static KDLNumber zero(int radix, Optional<String> type) {
-        switch (radix) {
-            case 2:
-            case 8:
-            case 10:
-            case 16:
-                return new KDLNumber(BigDecimal.ZERO, radix, type);
-            default:
-                throw new RuntimeException("Radix must be one of: [2, 8, 10, 16]");
-        }
+        return switch (radix) {
+            case 2, 8, 10, 16 -> new KDLNumber(BigDecimal.ZERO, radix, type);
+            default -> throw new RuntimeException("Radix must be one of: [2, 8, 10, 16]");
+        };
     }
 
     public static KDLNumber from(Number val, int radix) {
@@ -156,8 +166,20 @@ public class KDLNumber extends KDLValue<Number> {
     }
 
     public static Optional<KDLNumber> from(String val, Optional<String> type) {
-        if (val == null || val.length() == 0) {
+        if (val == null || val.isEmpty()) {
             return Optional.empty();
+        }
+
+        switch (val) {
+            case "#inf" -> {
+                return Optional.of(new KDLNumber(Float.POSITIVE_INFINITY, 10, type));
+            }
+            case "#-inf" -> {
+                return Optional.of(new KDLNumber(Float.NEGATIVE_INFINITY, 10, type));
+            }
+            case "#nan" -> {
+                return Optional.of(new KDLNumber(Float.NaN, 10, type));
+            }
         }
 
         final int radix;
@@ -167,23 +189,24 @@ public class KDLNumber extends KDLValue<Number> {
                 return Optional.of(KDLNumber.zero(10, type));
             }
 
-            switch (val.charAt(1)) {
-                case 'x':
+            toParse = switch (val.charAt(1)) {
+                case 'x' -> {
                     radix = 16;
-                    toParse = val.substring(2);
-                    break;
-                case 'o':
+                    yield val.substring(2);
+                }
+                case 'o' -> {
                     radix = 8;
-                    toParse = val.substring(2);
-                    break;
-                case 'b':
+                    yield val.substring(2);
+                }
+                case 'b' -> {
                     radix = 2;
-                    toParse = val.substring(2);
-                    break;
-                default:
+                    yield val.substring(2);
+                }
+                default -> {
                     radix = 10;
-                    toParse = val;
-            }
+                    yield val;
+                }
+            };
         } else {
             radix = 10;
             toParse = val;
@@ -215,8 +238,7 @@ public class KDLNumber extends KDLValue<Number> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLNumber)) return false;
-        KDLNumber kdlNumber = (KDLNumber) o;
+        if (!(o instanceof KDLNumber kdlNumber)) return false;
         /*
         Oh, right. You technically can't compare two `Number`s. Thaaaanks, Oracle.
         Ah, well. Just use `toString` and check if those are equal.

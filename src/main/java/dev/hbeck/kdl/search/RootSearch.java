@@ -21,7 +21,7 @@ public class RootSearch implements Search {
     public KDLDocument filter(KDLDocument document, boolean trim) {
         if (trim) {
             final KDLDocument.Builder builder = KDLDocument.builder();
-            for (KDLNode node : document.getNodes()) {
+            for (KDLNode node : document.nodes()) {
                 builder.addNode(node.toBuilder().setChild(Optional.empty()).build());
             }
             return builder.build();
@@ -42,14 +42,14 @@ public class RootSearch implements Search {
     }
 
     private void list(KDLDocument document, boolean trim, List<KDLNode> nodes) {
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             final KDLNode.Builder nodeBuilder = node.toBuilder();
             if (trim) {
                 nodeBuilder.setChild(Optional.empty());
             }
 
             nodes.add(nodeBuilder.build());
-            node.getChild().ifPresent(doc -> list(doc, trim, nodes));
+            node.child().ifPresent(doc -> list(doc, trim, nodes));
         }
     }
 
@@ -61,12 +61,12 @@ public class RootSearch implements Search {
     public KDLDocument mutate(KDLDocument document, Mutation mutation) {
         final KDLNode result = mutation.apply(EMPTY_NODE).orElse(EMPTY_NODE);
         return document.toBuilder()
-                .addNodes(result.getChild().orElse(KDLDocument.empty()).getNodes())
+                .addNodes(result.child().orElse(KDLDocument.empty()).nodes())
                 .build();
     }
 
     @Override
     public boolean anyMatch(KDLDocument document) {
-        return !document.getNodes().isEmpty();
+        return !document.nodes().isEmpty();
     }
 }

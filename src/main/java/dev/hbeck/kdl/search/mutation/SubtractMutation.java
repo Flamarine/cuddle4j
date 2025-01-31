@@ -49,25 +49,25 @@ public class SubtractMutation implements Mutation {
             return Optional.empty();
         }
 
-        final KDLNode.Builder builder = KDLNode.builder().setIdentifier(node.getIdentifier());
+        final KDLNode.Builder builder = KDLNode.builder().setIdentifier(node.identifier());
 
-        for (int i = 0; i < node.getArgs().size(); i++) {
+        for (int i = 0; i < node.args().size(); i++) {
             if (!positionalArgs.contains(i)) {
                 boolean matchesAny = false;
                 for (Predicate<KDLValue<?>> argPredicate : argPredicates) {
-                    if (argPredicate.test(node.getArgs().get(i))) {
+                    if (argPredicate.test(node.args().get(i))) {
                         matchesAny = true;
                     }
                 }
 
                 if (!matchesAny) {
-                    builder.addArg(node.getArgs().get(i));
+                    builder.addArg(node.args().get(i));
                 }
             }
         }
 
-        for (String propKey : node.getProps().keySet()) {
-            final KDLProperty property = new KDLProperty(propKey, node.getProps().get(propKey));
+        for (String propKey : node.props().keySet()) {
+            final KDLProperty property = new KDLProperty(propKey, node.props().get(propKey));
             boolean matchesAny = false;
             for (Predicate<KDLProperty> propPredicate : propPredicates) {
                 matchesAny |= propPredicate.test(property);
@@ -78,10 +78,10 @@ public class SubtractMutation implements Mutation {
             }
         }
 
-        if (emptyChild && node.getChild().isPresent()) {
+        if (emptyChild && node.child().isPresent()) {
             builder.setChild(KDLDocument.empty());
         } else if (!deleteChild) {
-            builder.setChild(node.getChild());
+            builder.setChild(node.child());
         }
 
         return Optional.of(builder.build());

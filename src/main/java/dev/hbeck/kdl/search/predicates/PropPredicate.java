@@ -19,8 +19,8 @@ public class PropPredicate implements NodeContentPredicate {
 
     @Override
     public boolean test(KDLNode node) {
-        for (String key : node.getProps().keySet()) {
-            if (keyPredicate.test(key) && valuePredicate.test(node.getProps().get(key))) {
+        for (String key : node.props().keySet()) {
+            if (keyPredicate.test(key) && valuePredicate.test(node.props().get(key))) {
                 return true;
             }
         }

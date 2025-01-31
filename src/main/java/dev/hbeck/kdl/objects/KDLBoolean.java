@@ -4,10 +4,10 @@ import dev.hbeck.kdl.print.PrintConfig;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class KDLBoolean extends KDLValue<Boolean> {
     private final boolean value;
 
@@ -65,9 +65,9 @@ public class KDLBoolean extends KDLValue<Boolean> {
     }
 
     public static Optional<KDLBoolean> fromString(String str, Optional<String> type) {
-        if ("true".equals(str)) {
+        if ("#true".equals(str)) {
             return Optional.of(new KDLBoolean(true, type));
-        } else if ("false".equals(str)) {
+        } else if ("#false".equals(str)) {
             return Optional.of(new KDLBoolean(false, type));
         } else {
             return Optional.empty();
@@ -85,8 +85,7 @@ public class KDLBoolean extends KDLValue<Boolean> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLBoolean)) return false;
-        KDLBoolean that = (KDLBoolean) o;
+        if (!(o instanceof KDLBoolean that)) return false;
         return value == that.value && type.equals(that.getType());
     }
 

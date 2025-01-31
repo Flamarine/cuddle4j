@@ -15,15 +15,9 @@ import java.util.Objects;
 /**
  * A model object representing a KDL Document. The only data in a document is the list of nodes, which may be empty.
  */
-public class KDLDocument implements KDLObject {
-    private final List<KDLNode> nodes;
-
+public record KDLDocument(List<KDLNode> nodes) implements KDLObject {
     public KDLDocument(List<KDLNode> nodes) {
         this.nodes = Collections.unmodifiableList(Objects.requireNonNull(nodes));
-    }
-
-    public List<KDLNode> getNodes() {
-        return nodes;
     }
 
     @Override
@@ -34,11 +28,11 @@ public class KDLDocument implements KDLObject {
     /**
      * Writes a text representation of the document to the provided writer
      *
-     * @param writer the writer to write to
+     * @param writer      the writer to write to
      * @param printConfig configuration controlling how the document is written
      * @throws IOException if there's any error writing the document
      */
-    public void writeKDLPretty(Writer writer, PrintConfig printConfig)  throws IOException {
+    public void writeKDLPretty(Writer writer, PrintConfig printConfig) throws IOException {
         writeKDL(writer, 0, printConfig);
     }
 
@@ -48,7 +42,7 @@ public class KDLDocument implements KDLObject {
      * @param writer the writer to write to
      * @throws IOException if there's any error writing the document
      */
-    public void writeKDLPretty(Writer writer)  throws IOException {
+    public void writeKDLPretty(Writer writer) throws IOException {
         writeKDLPretty(writer, PrintConfig.PRETTY_DEFAULT);
     }
 
@@ -79,7 +73,7 @@ public class KDLDocument implements KDLObject {
         return toKDLPretty(PrintConfig.PRETTY_DEFAULT);
     }
 
-    void writeKDL(Writer writer,int depth, PrintConfig printConfig) throws IOException {
+    void writeKDL(Writer writer, int depth, PrintConfig printConfig) throws IOException {
         if (nodes.isEmpty() && depth == 0) {
             writer.write(printConfig.getNewline());
             return;
@@ -148,13 +142,8 @@ public class KDLDocument implements KDLObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLDocument)) return false;
-        KDLDocument that = (KDLDocument) o;
-        return Objects.equals(nodes, that.nodes);
+        if (!(o instanceof KDLDocument(List<KDLNode> nodes1))) return false;
+        return Objects.equals(nodes, nodes1);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(nodes);
-    }
 }

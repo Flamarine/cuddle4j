@@ -10,21 +10,10 @@ import java.util.Objects;
 /**
  * An object presenting a key=value pair in a KDL document. Only used during parsing.
  */
-public class KDLProperty implements KDLObject {
-    private final String key;
-    private final KDLValue<?> value;
-
+public record KDLProperty(String key, KDLValue<?> value) implements KDLObject {
     public KDLProperty(String key, KDLValue<?> value) {
         this.key = Objects.requireNonNull(key);
         this.value = Objects.requireNonNull(value);
-    }
-
-    public KDLValue<?> getValue() {
-        return value;
-    }
-
-    public String getKey() {
-        return key;
     }
 
     @Override
@@ -49,13 +38,8 @@ public class KDLProperty implements KDLObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLProperty)) return false;
-        KDLProperty that = (KDLProperty) o;
-        return Objects.equals(key, that.key) && Objects.equals(value, that.value);
+        if (!(o instanceof KDLProperty(String key1, KDLValue<?> value1))) return false;
+        return Objects.equals(key, key1) && Objects.equals(value, value1);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, value);
-    }
 }

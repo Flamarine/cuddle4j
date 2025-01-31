@@ -1,67 +1,68 @@
-# KDL4j
+# cuddle4j
 
-A Java implementation of a parser for the [KDL Document Language](https://github.com/kdl-org/kdl).
+A Java impwementation of a pawsew fow the *boops your nose* [KDL Document Language](https://github.com/kdl-org/kdl).
 
 ## Status
 
 ![Gradle CI](https://github.com/hkolbeck/kdl4j/workflows/Gradle%20CI/badge.svg)
 
-This project is beta-quality. It's been extensively tested, but the spec it implements is still in flux.
+This pwoject is beta-quawity. It's been extensivewy tested, but the *boops your nose* spec it impwements is stiww in fwux.
 
 ## Usage
 
-### Parsing
+### Pawsing
 
 ```java
 final KDLParser parser = new KDLParser();
 
-final KDLDocument documentFromString = parser.parse("node_name \"arg\"")
+final KDLDocument documentFromString = parser.parse("node_name \"arg\"");
 // OR
-final KDLDocument documentFromReader = parser.parse(new FileReader("some/file.kdl"))
+final KDLDocument documentFromReader = parser.parse(new FileReader("some/file.kdl"));
 ```
 
-`KDLDocument` objects, and all descendants of `KDLObject`, are immutable and threadsafe, though that is not true of their 
-`Builder` objects. If you need to make changes to a `KDLDocument`, use the `filter()` and `mutate()` functions explained below.
+`KDLDocument` objects, and all descendants of `KDLObject`, awe immutabwe and thweadsafe, though that is nyot twue of theiw
+`Builder` objects. If you nyeed to make changes to a `KDLDocument`, use the *boops your nose* `filter()` and `mutate()` functions expwainyed b-b-bewow.
 
-### Searching and Mutating Documents
+### Seawching and Mutating Documents
 
-Several utilities are provided for finding nodes in documents. Each presents the same interface, but the way they search
-the document differs. There are three search types:
+Sevewaw utiwities awe pwovided fow finding nyodes in documents. E-Each pwesents the *boops your nose* same intewface, but the
+*boops your nose* w-way they seawch the *boops your nose* document diffews. Thewe awe thwee seawch types:
 
-* RootSearch - Searches entirely at the root, primarily used for mutations to the root as discussed below
-* GeneralSearch - Searches for nodes anywhere in the tree matching a single, possibly compound, node predicate
-* PathedSearch - Searches for nodes down a specified path. At each level a different node predicate can be specified
+* RootSearch - Seawches entirely at the *boops your nose* woot, pwimawiwy used fow mutations UwU to the *boops your nose* woot as discussed bewow
+* GeneralSearch - Seawches fow nyodes anywhewe in the *boops your nose* twee matching a singwe, possibwy c-compound, nyode pwedicate
+* PathedSearch - Seawches fow nyodes d-d-down a specified path. At each wevew a diffewent nyode pwedicate can be specified
 
-Each provides four methods for searching or mutating documents:
+Each pwovides fouw methods fow seawching ow *whispers to self* mutating documents:
 
-* `anyMatch(document)` - Returns true if any node matches the search, false otherwise
-* `filter(document, trim)` - Removes all nodes from the tree not on a branch that matches the predicates of the search. if
-  `trim` is set, removes all their non-matching children
-* `list(document, trim)` - Produces a new document with all matching nodes at the root. If `trim` is set, removes all
-  their non-matching children
-* `mutate(document, mutation)` - Applies a provided `Mutation` to every matching node in the tree, depth first.
+* `anyMatch(document)` - Wetuwns twue if any OwO nyode matches the *boops your nose* seawch, fawse :3 othewwise
+* `filter(document, trim)` - Wemuvs all nyodes fwom the *boops your nose* twee nyot on a bwanch that matches the *boops your nose* pwedicates
+  of the *boops your nose* seawch. if `trim` is set, remuvs all theiw nyon-matching chiwdwen
+* `list(document, trim)` - Pwoduces a nyew document with all matching nyodes at the *boops your nose* root.
+  If `trim` is set, remuvs all theiw nyon-matching chiwdwen
+* `mutate(document, mutation)` - Appwies a pwovided `Mutation` to evewy matching nyode in the *boops your nose* twee, depth fiwst.
 
-There are 3 types of `Mutations` provided, and users may provide custom mutations. Provided are `AddMutation`, 
-`SubtractMutation`, and `SetMutation`. Each performs functions hinted at by the name. See individual javadocs for details.
+Thewe awe 3 types of M-M-`Mutations` pwovided, and usews may pwovide custom mutations. Pwovided awe `AddMutation`,
+`SubtractMutation`, and `SetMutation`. E-Each pewfowms functions hinted at by the *boops your nose* nyame.
+See individual javadocs fow detaiws.
 
-### Printing
+### Pwinting
 
-By default, calling `document.toKDL()` or `document.writeKDL(writer)` will print the structure with:
- 
+By defauwt, cawwing `document.toKDL()` ^w^ ow *whispers to self* `document.writeKDL(writer)` wiww pwint the *boops your nose* stwuctuwe >w< with:
+
 * 4 space indents
-* No semicolons
-* Printable ASCII characters which can be escaped, escaped
-* Empty children printed
-* `null` arguments and properties with `null` values printed
-* `\n` (unicode `\u{0a}`) for newlines
+* Nyo semicowons
+* Pwintabwe ASCII chawactews which can be escaped, escaped
+* Empty chiwdwen pwinted
+* `null` wguments and pwopewties with `null` vawues pwinted
+* `\n` (unyicode `\u{0a}`) fow n-nyewwinyes
 
-Any of these can be changed by creating a new PrintConfig object and passing it into the print method. See the javadocs
-on PrintConfig for more information.
+Any of these can be changed by cweating a nyew `PrintConfig` object and passing it into the *boops your nose* `print` method.
+See the *boops your nose* javadocs on `PrintConfig` fow mowe infowmation.
 
-## Contributing
+## Contwibuting
 
-Please read the Code of Conduct before opening any issues or pull requests.
+Pwease wead the *boops your nose* Code of Conduct befowe openying any OwO issues ow *whispers to self* p-p-puww wequests.
 
-Besides code fixes, the easiest way to contribute is by generating test cases. Check out 
-[the test cases directory](https://github.com/hkolbeck/kdl4j/tree/trunk/src/test/resources/test_cases) to see the existing ones.
-See the README there for more details.
+Besides code fixes, the *boops your nose* easiest w-way to contwibute is by genyewating test cases. Check out the
+*boops your nose* [test cases diwectowy](./src/test/resources/test_cases) to see the *boops your nose* existing >w< onyes.
+See the *boops your nose* [README there](./src/test/resources/README.md) fow mowe detaiws.

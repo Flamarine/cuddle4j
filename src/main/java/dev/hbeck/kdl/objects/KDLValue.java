@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public abstract class KDLValue<T> implements KDLObject {
     protected final Optional<String> type;
 
@@ -58,25 +59,17 @@ public abstract class KDLValue<T> implements KDLObject {
     }
 
     public static KDLValue<?> from(Object o, Optional<String> type) {
-        if (o == null) return new KDLNull(type);
-        if (o instanceof Boolean) {
-            return new KDLBoolean((Boolean) o, type);
-        }
-        if (o instanceof BigInteger) {
-            return new KDLNumber(new BigDecimal((BigInteger)o), 10, type);
-        }
-        if (o instanceof BigDecimal) {
-            return new KDLNumber((BigDecimal)o, 10, type);
-        }
-        if (o instanceof Number) {
-            return new KDLNumber(new BigDecimal(o.toString()), 10, type);
-        }
-        if (o instanceof String) {
-            return new KDLString((String) o, type);
-        }
-        if (o instanceof KDLValue) return (KDLValue<?>) o;
+        return switch (o) {
+            case null -> new KDLNull(type);
+            case Boolean b -> new KDLBoolean(b, type);
+            case BigInteger bigInteger -> new KDLNumber(new BigDecimal(bigInteger), 10, type);
+            case BigDecimal bigDecimal -> new KDLNumber(bigDecimal, 10, type);
+            case Number number -> new KDLNumber(number, 10, type);
+            case String s -> new KDLString(s, type);
+            case KDLValue<?> kdlValue -> kdlValue;
+            default -> throw new RuntimeException(String.format("No KDLValue for object '%s'", o));
+        };
 
-        throw new RuntimeException(String.format("No KDLValue for object '%s'", o));
     }
 
     @Override

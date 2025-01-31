@@ -15,7 +15,7 @@ public class NodePredicate implements Predicate<KDLNode> {
 
     @Override
     public boolean test(KDLNode node) {
-        return identifierPredicate.test(node.getIdentifier()) && contentPredicate.test(node);
+        return identifierPredicate.test(node.identifier()) && contentPredicate.test(node);
     }
 
     public static NodePredicate hasName(String name) {

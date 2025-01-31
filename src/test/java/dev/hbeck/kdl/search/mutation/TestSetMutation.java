@@ -75,8 +75,8 @@ public class TestSetMutation {
 
     @Test
     public void test() {
-        final KDLNode inputNode = parser.parse(input).getNodes().get(0);
-        final KDLNode expectedNode = parser.parse(expected).getNodes().get(0);
+        final KDLNode inputNode = parser.parse(input).nodes().get(0);
+        final KDLNode expectedNode = parser.parse(expected).nodes().get(0);
 
         final Optional<KDLNode> result = mutation.apply(inputNode);
         assertThat(result, equalTo(Optional.of(expectedNode)));

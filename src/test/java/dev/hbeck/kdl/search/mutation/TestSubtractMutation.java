@@ -54,8 +54,8 @@ public class TestSubtractMutation {
 
     @Test
     public void test() {
-        final KDLNode inputNode = parser.parse(input).getNodes().get(0);
-        final Optional<KDLNode> expectedNode = expected.map(ex -> parser.parse(ex).getNodes().get(0));
+        final KDLNode inputNode = parser.parse(input).nodes().get(0);
+        final Optional<KDLNode> expectedNode = expected.map(ex -> parser.parse(ex).nodes().get(0));
 
         final Optional<KDLNode> result = mutation.apply(inputNode);
         assertThat(result, equalTo(expectedNode));
@@ -63,7 +63,7 @@ public class TestSubtractMutation {
 
     private static Predicate<KDLProperty> eq(String key, Object val) {
         final KDLValue<?> kdlValue = KDLValue.from(val);
-        return prop -> key.equals(prop.getKey()) && kdlValue.equals(prop.getValue());
+        return prop -> key.equals(prop.key()) && kdlValue.equals(prop.value());
     }
 
     private static Predicate<KDLValue<?>> eq(Object val) {

@@ -37,7 +37,7 @@ public class GeneralSearch implements Search {
 
     private void list(KDLDocument doc, boolean trim, int depth, List<KDLNode> nodes) {
         if (depth <= maxDepth) {
-            for (KDLNode node : doc.getNodes()) {
+            for (KDLNode node : doc.nodes()) {
                 if (minDepth <= depth && predicate.test(node)) {
                     final KDLNode.Builder nodeBuilder = node.toBuilder();
                     if (trim) {
@@ -47,7 +47,7 @@ public class GeneralSearch implements Search {
                     nodes.add(nodeBuilder.build());
                 }
 
-                node.getChild().ifPresent(ch -> list(ch, trim, depth + 1, nodes));
+                node.child().ifPresent(ch -> list(ch, trim, depth + 1, nodes));
             }
         }
     }
@@ -66,8 +66,8 @@ public class GeneralSearch implements Search {
         }
 
         final KDLDocument.Builder builder = KDLDocument.builder();
-        for (KDLNode node : document.getNodes()) {
-            final Optional<KDLDocument> newChild = node.getChild().flatMap(doc -> filter(doc, depth + 1, trim));
+        for (KDLNode node : document.nodes()) {
+            final Optional<KDLDocument> newChild = node.child().flatMap(doc -> filter(doc, depth + 1, trim));
             if (newChild.isPresent()) {
                 builder.addNode(node.toBuilder().setChild(newChild).build());
             } else if (predicate.test(node)) {
@@ -80,7 +80,7 @@ public class GeneralSearch implements Search {
         }
 
         final KDLDocument returnDoc = builder.build();
-        if (returnDoc.getNodes().isEmpty()) {
+        if (returnDoc.nodes().isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(returnDoc);
@@ -101,23 +101,23 @@ public class GeneralSearch implements Search {
         }
 
         final KDLDocument.Builder docBuilder = KDLDocument.builder();
-        for (KDLNode node : doc.getNodes()) {
+        for (KDLNode node : doc.nodes()) {
             if (depth >= minDepth && predicate.test(node)) {
-                if (node.getChild().isPresent()) {
-                    final Optional<KDLDocument> newChild = node.getChild().flatMap(ch -> mutate(fun, ch, depth + 1));
+                if (node.child().isPresent()) {
+                    final Optional<KDLDocument> newChild = node.child().flatMap(ch -> mutate(fun, ch, depth + 1));
                     final KDLNode newNode = node.toBuilder().setChild(newChild).build();
                     fun.apply(newNode).ifPresent(docBuilder::addNode);
                 } else {
                     fun.apply(node).ifPresent(docBuilder::addNode);
                 }
             } else {
-                final Optional<KDLDocument> newChild = node.getChild().flatMap(ch -> mutate(fun, ch, depth + 1));
+                final Optional<KDLDocument> newChild = node.child().flatMap(ch -> mutate(fun, ch, depth + 1));
                 docBuilder.addNode(node.toBuilder().setChild(newChild).build());
             }
         }
 
         final KDLDocument newDoc = docBuilder.build();
-        if (newDoc.getNodes().isEmpty()) {
+        if (newDoc.nodes().isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(newDoc);
@@ -138,10 +138,10 @@ public class GeneralSearch implements Search {
         }
 
 
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             if (depth >= minDepth && predicate.test(node)) {
                 return true;
-            } else if (node.getChild().map(ch -> anyMatch(ch, depth + 1)).orElse(false)) {
+            } else if (node.child().map(ch -> anyMatch(ch, depth + 1)).orElse(false)) {
                 return true;
             }
         }

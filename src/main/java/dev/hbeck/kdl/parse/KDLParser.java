@@ -25,18 +25,12 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
-import static dev.hbeck.kdl.parse.CharClasses.isLiteralChar;
-import static dev.hbeck.kdl.parse.CharClasses.isUnicodeLinespace;
-import static dev.hbeck.kdl.parse.CharClasses.isUnicodeWhitespace;
-import static dev.hbeck.kdl.parse.CharClasses.isValidBareIdChar;
-import static dev.hbeck.kdl.parse.CharClasses.isValidBareIdStart;
-import static dev.hbeck.kdl.parse.CharClasses.isValidDecimalChar;
-import static dev.hbeck.kdl.parse.CharClasses.isValidHexChar;
-import static dev.hbeck.kdl.parse.CharClasses.isValidNumericStart;
+import static dev.hbeck.kdl.parse.CharClasses.*;
 
 /**
  * The core parser object. Instances are stateless and safe to share between threads.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class KDLParser {
 
     public static final int EOF = -1;
@@ -183,9 +177,8 @@ public class KDLParser {
                         final KDLObject object = parseArgOrProp(context);
                         if (object instanceof KDLValue) {
                             args.add((KDLValue<?>) object);
-                        } else if (object instanceof KDLProperty) {
-                            final KDLProperty property = (KDLProperty) object;
-                            properties.put(property.getKey(), property.getValue());
+                        } else if (object instanceof KDLProperty(String key, KDLValue<?> value)) {
+                            properties.put(key, value);
                         } else {
                             throw new KDLInternalException(
                                     String.format("Unexpected type found, expected property, arg, or child: '%s' type: %s",
@@ -231,6 +224,7 @@ public class KDLParser {
 
     String parseIdentifier(KDLParseContext context) throws IOException {
         int c = context.peek();
+
         if (c == '"') {
             return parseEscapedString(context);
         } else if (isValidBareIdStart(c)) {
@@ -257,7 +251,8 @@ public class KDLParser {
         boolean isBare = false;
         int c = context.peek();
         if (c == '"') {
-            object = new KDLString(parseEscapedString(context), type);
+            String strVal = parseNonRawString(context);
+            object = new KDLString(strVal, type);
         } else if (c == '+' || c == '-') {
             final int sign = c;
             context.read();
@@ -271,6 +266,8 @@ public class KDLParser {
             }
         } else if (isValidNumericStart(c)) {
             object = parseNumber(context, type);
+        } else if (c == '#') {
+            object = parseKeywordValue(context, type);
         } else if (isValidBareIdStart(c)) {
             String strVal;
             if (c == 'r') {
@@ -289,15 +286,7 @@ public class KDLParser {
             }
 
             if (isBare) {
-                if ("true".equals(strVal)) {
-                    object = new KDLBoolean(true, type);
-                } else if ("false".equals(strVal)) {
-                    object = new KDLBoolean(false, type);
-                } else if ("null".equals(strVal)) {
-                    object = new KDLNull(type);
-                } else {
-                    object = new KDLString(strVal, type);
-                }
+                throw new KDLParseException("Invalid bare value");
             } else {
                 object = new KDLString(strVal, type);
             }
@@ -359,7 +348,7 @@ public class KDLParser {
             type = Optional.of(parseIdentifier(context));
             c = context.read();
             if (c != ')') {
-                throw new KDLParseException("Un-terminated type annotation, missing closing paren.");
+                throw new KDLParseException("Un-terminated type annotation, missing closing parent.");
             }
         }
 
@@ -370,32 +359,73 @@ public class KDLParser {
         final Optional<String> type = parseTypeIfPresent(context);
         int c = context.peek();
         if (c == '"') {
-            return new KDLString(parseEscapedString(context), type);
+            String strVal = parseNonRawString(context);
+            return new KDLString(strVal, type);
         } else if (c == 'r') {
             return new KDLString(parseRawString(context), type);
         } else if (isValidNumericStart(c)) {
             return parseNumber(context, type);
         } else {
-            final StringBuilder stringBuilder = new StringBuilder();
-
-            while (isLiteralChar(c)) {
-                context.read();
-                stringBuilder.appendCodePoint(c);
-                c = context.peek();
-            }
-
-            final String strVal = stringBuilder.toString();
-            switch (strVal) {
-                case "true":
-                    return new KDLBoolean(true, type);
-                case "false":
-                    return new KDLBoolean(false, type);
-                case "null":
-                    return new KDLNull(type);
-                default:
-                    throw new KDLParseException(String.format("Unknown literal in property value: '%s' Expected 'true', 'false', or 'null'", strVal));
-            }
+            return parseKeywordValue(context, type);
         }
+    }
+
+    String parseNonRawString(KDLParseContext context) throws IOException {
+        int c;
+        String strVal;
+        c = context.read();
+        if (context.peek() == '"') {
+            c = context.read();
+            if (context.peek() == '"') {
+                c = context.read();
+                int next = context.peek();
+                context.unread('"');
+                context.unread('"');
+                context.unread('"');
+                if (next == '\n') {
+                    strVal = parseMultiLineString(context);
+                } else {
+                    throw new KDLParseException("Unexpected character: \"");
+                }
+            } else {
+                context.unread('"');
+                context.unread('"');
+                strVal = parseEscapedString(context);
+            }
+        } else {
+            context.unread('"');
+            strVal = parseEscapedString(context);
+        }
+        return strVal;
+    }
+
+    KDLValue<?> parseKeywordValue(KDLParseContext context, Optional<String> type) throws IOException {
+        if (context.peek() == '#') {
+            context.read();
+        } else {
+            throw new KDLParseException("Property values 'true', 'false', 'null', 'inf', '-inf', and 'nan' must be prefixed with a '#'");
+        }
+
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        int c = context.peek();
+        while (isKeywordChar(c)) {
+            context.read();
+            stringBuilder.appendCodePoint(c);
+            c = context.peek();
+        }
+
+        final String strVal = stringBuilder.toString();
+        return switch (strVal) {
+            case "true" -> new KDLBoolean(true, type);
+            case "false" -> new KDLBoolean(false, type);
+            case "null" -> new KDLNull(type);
+            case "inf" -> new KDLNumber(Float.POSITIVE_INFINITY, 10, type);
+            case "-inf" -> new KDLNumber(Float.NEGATIVE_INFINITY, 10, type);
+            case "nan" -> new KDLNumber(Float.NaN, 10, type);
+            default ->
+                    throw new KDLParseException(String.format("Unknown literal in property value: '#%s' Expected '#true', '#false', '#null', '#inf', '#-inf', '#nan'", strVal));
+        };
     }
 
     KDLNumber parseNumber(KDLParseContext context, Optional<String> type) throws IOException {
@@ -482,7 +512,7 @@ public class KDLParser {
         boolean signLegal = false;
         int exponentLen = 0;
         int c = context.peek();
-        if (c == '_' || c == 'E' || c == 'e') {
+        if (c == '_' || c == 'E' || c == 'e' || c == '.') {
             throw new KDLParseException(String.format("Decimal numbers may not begin with an '%s' character", (char) c));
         } else if (c == '+' || c == '-') {
             throw new KDLParseException("Numbers may not begin with multiple sign characters");
@@ -703,6 +733,70 @@ public class KDLParser {
                 stringBuilder.appendCodePoint(c);
             }
         }
+    }
+
+    String parseMultiLineString(KDLParseContext context) throws IOException {
+        int c1 = context.read(); // Skip opening "
+        int c2 = context.read(); // Skip second "
+        int c3 = context.read(); // Skip third "
+        int c4 = context.read(); // Skip newline
+        if (c1 != '"' || c2 != '"' || c3 != '"' || c4 != '\n') {
+            throw new KDLInternalException("No triple quotes or Newline at the beginning of multi-line string");
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        List<String> lines = new ArrayList<>();
+        StringBuilder lineBuilder;
+        String lastLine = "";
+        while (true) {
+            lineBuilder = new StringBuilder();
+            boolean inEscape = false;
+            int c = context.peek();
+            while (c != '\n') {
+                int prev = context.read();
+                c = context.peek();
+                if (prev == '\\') {
+                    lineBuilder.appendCodePoint(getEscaped(c, context));
+                    c = context.read();
+                } else {
+                    lineBuilder.appendCodePoint(prev);
+                }
+                if (c == '"') {
+                    context.read();
+                    c = context.peek();
+                    if (c == '"') {
+                        context.read();
+                        int next = context.peek();
+                        context.unread('"');
+                        context.unread('"');
+                        if (next == '"') {
+                            break;
+                        }
+                    } else {
+                        context.unread('"');
+                    }
+                }
+            }
+            lineBuilder.appendCodePoint(c);
+            String line = lineBuilder.toString();
+            if (!line.endsWith("\n")) {
+                lastLine = line;
+                break;
+            }
+            lines.add(line);
+        }
+        if (lastLine.isEmpty() || !lastLine.isBlank()) {
+            throw new KDLInternalException("No white spaces before the end of multi-line string");
+        }
+        for (String line: lines) {
+            if (!line.startsWith(lastLine)) {
+                throw new KDLInternalException("Lines in multi-line string are not preceded by the last line's white spaces");
+            }
+            stringBuilder.append(line.substring(lastLine.length()));
+        }
+
+        return stringBuilder.toString();
     }
 
     SlashAction getSlashAction(KDLParseContext context, boolean escaped) throws IOException {

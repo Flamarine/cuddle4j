@@ -16,13 +16,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-public class KDLNode implements KDLObject {
-    private final String identifier;
-    private final Optional<String> type;
-    private final Map<String, KDLValue<?>> props;
-    private final List<KDLValue<?>> args;
-    private final Optional<KDLDocument> child;
-
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public record KDLNode(String identifier, Optional<String> type, Map<String, KDLValue<?>> props, List<KDLValue<?>> args,
+                      Optional<KDLDocument> child) implements KDLObject {
     public KDLNode(String identifier, Optional<String> type, Map<String, KDLValue<?>> props, List<KDLValue<?>> args, Optional<KDLDocument> child) {
         this.identifier = Objects.requireNonNull(identifier);
         this.type = type;
@@ -38,26 +34,6 @@ public class KDLNode implements KDLObject {
      */
     public static Builder builder() {
         return new Builder();
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public Optional<String> getType() {
-        return type;
-    }
-
-    public Map<String, KDLValue<?>> getProps() {
-        return props;
-    }
-
-    public List<KDLValue<?>> getArgs() {
-        return args;
-    }
-
-    public Optional<KDLDocument> getChild() {
-        return child;
     }
 
     /**
@@ -108,7 +84,7 @@ public class KDLNode implements KDLObject {
         }
 
         if (child.isPresent()) {
-            if (!child.get().getNodes().isEmpty() || printConfig.shouldPrintEmptyChildren()) {
+            if (!child.get().nodes().isEmpty() || printConfig.shouldPrintEmptyChildren()) {
                 writer.write('{');
                 writer.write(printConfig.getNewline());
                 child.get().writeKDL(writer, depth + 1, printConfig);
@@ -148,14 +124,12 @@ public class KDLNode implements KDLObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLNode)) return false;
-        KDLNode kdlNode = (KDLNode) o;
-        return Objects.equals(identifier, kdlNode.identifier) && Objects.equals(type, kdlNode.type) && Objects.equals(props, kdlNode.props) && Objects.equals(args, kdlNode.args) && Objects.equals(child, kdlNode.child);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(identifier, type, props, args, child);
+        if (!(o instanceof KDLNode(
+                String identifier1, Optional<String> type1, Map<String, KDLValue<?>> props1, List<KDLValue<?>> args1,
+                Optional<KDLDocument> child1
+        ))) return false;
+        return Objects.equals(identifier, identifier1) && Objects.equals(type, type1) &&
+                Objects.equals(props, props1) && Objects.equals(args, args1) && Objects.equals(child, child1);
     }
 
     public static class Builder {
@@ -413,7 +387,7 @@ public class KDLNode implements KDLObject {
         }
 
         public Builder addProp(KDLProperty prop) {
-            props.put(prop.getKey(), prop.getValue());
+            props.put(prop.key(), prop.value());
             return this;
         }
 

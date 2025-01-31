@@ -172,7 +172,7 @@ public class TestGeneralSearch {
         when(mutation.apply(any())).thenAnswer(invocation -> {
             final KDLNode node = invocation.getArgument(0);
             final KDLDocument.Builder docBuilder = KDLDocument.builder();
-            node.getChild().ifPresent(ch -> docBuilder.addNodes(ch.getNodes()));
+            node.child().ifPresent(ch -> docBuilder.addNodes(ch.nodes()));
             docBuilder.addNode(KDLNode.builder().setIdentifier("added").build());
 
             return Optional.of(node.toBuilder().setChild(docBuilder.build()).build());
@@ -193,7 +193,7 @@ public class TestGeneralSearch {
         when(mutation.apply(any())).thenAnswer(invocation -> {
             final KDLNode node = invocation.getArgument(0);
             final KDLDocument.Builder docBuilder = KDLDocument.builder();
-            node.getChild().ifPresent(ch -> docBuilder.addNodes(ch.getNodes()));
+            node.child().ifPresent(ch -> docBuilder.addNodes(ch.nodes()));
             docBuilder.addNode(KDLNode.builder().setIdentifier("added").build());
 
             return Optional.of(node.toBuilder().setChild(docBuilder.build()).build());
@@ -212,7 +212,7 @@ public class TestGeneralSearch {
         when(mutation.apply(any())).thenAnswer(invocation -> {
             final KDLNode node = invocation.getArgument(0);
             final KDLDocument.Builder docBuilder = KDLDocument.builder();
-            node.getChild().ifPresent(ch -> docBuilder.addNodes(ch.getNodes()));
+            node.child().ifPresent(ch -> docBuilder.addNodes(ch.nodes()));
             docBuilder.addNode(KDLNode.builder().setIdentifier("added").build());
 
             return Optional.of(node.toBuilder().setChild(docBuilder.build()).build());
@@ -231,7 +231,7 @@ public class TestGeneralSearch {
         when(mutation.apply(any())).thenAnswer(invocation -> {
             final KDLNode node = invocation.getArgument(0);
             final KDLDocument.Builder docBuilder = KDLDocument.builder();
-            node.getChild().ifPresent(ch -> docBuilder.addNodes(ch.getNodes()));
+            node.child().ifPresent(ch -> docBuilder.addNodes(ch.nodes()));
             docBuilder.addNode(KDLNode.builder().setIdentifier("added").build());
 
             return Optional.of(node.toBuilder().setChild(docBuilder.build()).build());
@@ -253,7 +253,7 @@ public class TestGeneralSearch {
         when(mutation.apply(any())).thenAnswer(invocation -> {
             final KDLNode node = invocation.getArgument(0);
             final KDLDocument.Builder docBuilder = KDLDocument.builder();
-            node.getChild().ifPresent(ch -> docBuilder.addNodes(ch.getNodes()));
+            node.child().ifPresent(ch -> docBuilder.addNodes(ch.nodes()));
             docBuilder.addNode(KDLNode.builder().setIdentifier("added").build());
 
             return Optional.of(node.toBuilder().setChild(docBuilder.build()).build());

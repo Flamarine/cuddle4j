@@ -61,8 +61,8 @@ public class AddMutation implements Mutation {
             builder.addProp(key, props.get(key));
         }
 
-        if (node.getChild().isPresent() && child.isPresent()) {
-            final KDLDocument newChild = node.getChild().get().toBuilder().addNodes(child.get().getNodes()).build();
+        if (node.child().isPresent() && child.isPresent()) {
+            final KDLDocument newChild = node.child().get().toBuilder().addNodes(child.get().nodes()).build();
             builder.setChild(newChild);
         } else {
             builder.setChild(child);

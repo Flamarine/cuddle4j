@@ -16,7 +16,7 @@ public class NodeIDMatcher implements ArgumentMatcher<KDLNode>{
             return false;
         }
 
-        return id.equals(argument.getIdentifier());
+        return id.equals(argument.identifier());
     }
 
     public static NodeIDMatcher hasId(String id) {

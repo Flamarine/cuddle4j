@@ -38,7 +38,7 @@ public class PathedSearch implements Search {
 
         final Integer maxKey = path.floorKey(Integer.MAX_VALUE);
         final KDLDocument.Builder builder = KDLDocument.builder();
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             if (predicate.test(node)) {
                 if (depth == maxKey) {
                     if (trim) {
@@ -47,7 +47,7 @@ public class PathedSearch implements Search {
                         builder.addNode(node);
                     }
                 } else {
-                    final Optional<KDLDocument> newChild = node.getChild().flatMap(ch -> filter(ch, depth + 1, trim));
+                    final Optional<KDLDocument> newChild = node.child().flatMap(ch -> filter(ch, depth + 1, trim));
                     if (newChild.isPresent()) {
                         builder.addNode(node.toBuilder().setChild(newChild).build());
                     }
@@ -56,7 +56,7 @@ public class PathedSearch implements Search {
         }
 
         final KDLDocument returnDoc = builder.build();
-        if (returnDoc.getNodes().isEmpty()) {
+        if (returnDoc.nodes().isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(returnDoc);
@@ -80,7 +80,7 @@ public class PathedSearch implements Search {
         }
 
         final Integer maxKey = path.floorKey(Integer.MAX_VALUE);
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             if (predicate.test(node)) {
                 if (depth == maxKey) {
                     if (trim) {
@@ -89,7 +89,7 @@ public class PathedSearch implements Search {
                         nodes.add(node);
                     }
                 } else {
-                    node.getChild().ifPresent(ch -> list(ch, trim, depth + 1, nodes));
+                    node.child().ifPresent(ch -> list(ch, trim, depth + 1, nodes));
                 }
             }
         }
@@ -111,13 +111,13 @@ public class PathedSearch implements Search {
 
         final Integer maxKey = path.floorKey(Integer.MAX_VALUE);
         final KDLDocument.Builder docBuilder = KDLDocument.builder();
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             if (predicate.test(node)) {
                 if (depth == maxKey) {
                     mutation.apply(node).ifPresent(docBuilder::addNode);
                 } else {
                     final KDLNode.Builder nodeBuilder = node.toBuilder();
-                    node.getChild().ifPresent(ch -> nodeBuilder.setChild(mutate(ch, mutation, depth + 1)));
+                    node.child().ifPresent(ch -> nodeBuilder.setChild(mutate(ch, mutation, depth + 1)));
                     docBuilder.addNode(nodeBuilder.build());
                 }
             } else {
@@ -126,7 +126,7 @@ public class PathedSearch implements Search {
         }
 
         final KDLDocument newDoc = docBuilder.build();
-        if (newDoc.getNodes().isEmpty()) {
+        if (newDoc.nodes().isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(newDoc);
@@ -148,11 +148,11 @@ public class PathedSearch implements Search {
         }
 
         final Integer maxKey = path.floorKey(Integer.MAX_VALUE);
-        for (KDLNode node : document.getNodes()) {
+        for (KDLNode node : document.nodes()) {
             if (predicate.test(node)) {
                 if (depth == maxKey) {
                     return true;
-                } else if (node.getChild().map(ch -> anyMatch(ch, depth +1)).orElse(false)) {
+                } else if (node.child().map(ch -> anyMatch(ch, depth +1)).orElse(false)) {
                     return true;
                 }
             }

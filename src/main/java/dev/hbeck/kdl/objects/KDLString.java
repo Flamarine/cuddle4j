@@ -5,13 +5,13 @@ import dev.hbeck.kdl.print.PrintUtil;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * A model object representing a string in a KDL document. Note that even if quoted, identifiers are not KDLStrings.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class KDLString extends KDLValue<String> {
     private final String value;
 
@@ -95,8 +95,7 @@ public class KDLString extends KDLValue<String> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KDLString)) return false;
-        KDLString kdlString = (KDLString) o;
+        if (!(o instanceof KDLString kdlString)) return false;
         return Objects.equals(value, kdlString.value) && Objects.equals(type, kdlString.getType());
     }
 

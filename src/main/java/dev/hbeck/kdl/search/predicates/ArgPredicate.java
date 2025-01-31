@@ -17,7 +17,7 @@ public class ArgPredicate implements NodeContentPredicate {
 
     @Override
     public boolean test(KDLNode node) {
-        for (KDLValue arg : node.getArgs()) {
+        for (KDLValue arg : node.args()) {
             if (predicate.test(arg)) {
                 return true;
             }
