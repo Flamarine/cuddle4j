@@ -8,14 +8,8 @@ import java.util.function.Predicate;
 /**
  * Predicate matching a KDLNode property
  */
-public class PropPredicate implements NodeContentPredicate {
-    private final Predicate<String> keyPredicate;
-    private final Predicate<KDLValue> valuePredicate;
-
-    public PropPredicate(Predicate<String> keyPredicate, Predicate<KDLValue> valuePredicate) {
-        this.keyPredicate = keyPredicate;
-        this.valuePredicate = valuePredicate;
-    }
+public record PropPredicate(Predicate<String> keyPredicate,
+                            Predicate<KDLValue> valuePredicate) implements NodeContentPredicate {
 
     @Override
     public boolean test(KDLNode node) {
@@ -26,13 +20,5 @@ public class PropPredicate implements NodeContentPredicate {
         }
 
         return false;
-    }
-
-    public Predicate<String> getKeyPredicate() {
-        return keyPredicate;
-    }
-
-    public Predicate<KDLValue> getValuePredicate() {
-        return valuePredicate;
     }
 }

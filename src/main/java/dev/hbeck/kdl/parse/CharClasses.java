@@ -154,17 +154,10 @@ public class CharClasses {
      * @return true if the character is a unicode newline, false otherwise
      */
     public static boolean isUnicodeLinespace(int c) {
-        switch (c) {
-            case '\r':
-            case '\n':
-            case '\u0085':
-            case '\u000C':
-            case '\u2028':
-            case '\u2029':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case '\r', '\n', '\u0085', '\u000C', '\u2028', '\u2029' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -174,29 +167,11 @@ public class CharClasses {
      * @return true if the character is unicode whitespace, false otherwise
      */
     public static boolean isUnicodeWhitespace(int c) {
-        switch (c) {
-            case '\u0009':
-            case '\u0020':
-            case '\u00A0':
-            case '\u1680':
-            case '\u2000':
-            case '\u2001':
-            case '\u2002':
-            case '\u2003':
-            case '\u2004':
-            case '\u2005':
-            case '\u2006':
-            case '\u2007':
-            case '\u2008':
-            case '\u2009':
-            case '\u200A':
-            case '\u202F':
-            case '\u205F':
-            case '\u3000':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case '\u0009', '\u0020', '\u00A0', '\u1680', '\u2000', '\u2001', '\u2002', '\u2003', '\u2004', '\u2005',
+                 '\u2006', '\u2007', '\u2008', '\u2009', '\u200A', '\u202F', '\u205F', '\u3000' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -207,10 +182,6 @@ public class CharClasses {
      */
     public static boolean isPrintableAscii(int c) {
         return ' ' <= c && c <= '~';
-    }
-
-    public static boolean isReservedKeyword(String str) {
-        return str.matches("^(true|false|null|inf|-inf|nan)$");
     }
 
     public static boolean isNonAscii(int c) {
@@ -237,41 +208,24 @@ public class CharClasses {
      * @return An Optional wrapping the escape sequence string if the character needs to be escaped, or false otherwise
      */
     public static Optional<String> getCommonEscape(int c) {
-        switch (c) {
-            case '\\':
-                return ESC_BACKSLASH;
-            case '\b':
-                return ESC_BACKSPACE;
-            case '\n':
-                return ESC_NEWLINE;
-            case '\f':
-                return ESC_FORM_FEED;
-            case '/':
-                return ESC_FORWARD_SLASH;
-            case '\t':
-                return ESC_TAB;
-            case '\r':
-                return ESC_CR;
-            case '"':
-                return ESC_QUOTE;
-            default:
-                return Optional.empty();
-        }
+        return switch (c) {
+            case '\\' -> ESC_BACKSLASH;
+            case '\b' -> ESC_BACKSPACE;
+            case '\n' -> ESC_NEWLINE;
+            case '\f' -> ESC_FORM_FEED;
+            case '/' -> ESC_FORWARD_SLASH;
+            case '\t' -> ESC_TAB;
+            case '\r' -> ESC_CR;
+            case '"' -> ESC_QUOTE;
+            default -> Optional.empty();
+        };
     }
 
     public static boolean isCommonEscape(int c) {
-        switch (c) {
-            case '\\':
-            case '\b':
-            case '\n':
-            case '\f':
-            case '\t':
-            case '\r':
-            case '"':
-                return true;
-            default:
-                return false;
-        }
+        return switch (c) {
+            case '\\', '\b', '\n', '\f', '\t', '\r', '"' -> true;
+            default -> false;
+        };
     }
 
     /**

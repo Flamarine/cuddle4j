@@ -8,6 +8,7 @@ import java.util.Optional;
 /**
  * Matches nodes based on the contents, or absence, of a child
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class ChildPredicate implements NodeContentPredicate {
     private final Optional<Search> search;
 
@@ -17,11 +18,10 @@ public class ChildPredicate implements NodeContentPredicate {
 
     @Override
     public boolean test(KDLNode node) {
-        if (!search.isPresent()) {
-            return !node.child().isPresent() || node.child().get().nodes().isEmpty();
-        }
-
-        return node.child().map(ch -> search.get().anyMatch(ch)).orElse(false);
+        return search.map(value -> node.child()
+                .map(value::anyMatch)
+                .orElse(false)
+        ).orElseGet(() -> node.child().isEmpty() || node.child().get().nodes().isEmpty());
     }
 
     public static ChildPredicate empty() {

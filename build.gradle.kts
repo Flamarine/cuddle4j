@@ -49,6 +49,7 @@ dependencies {
     testImplementation("org.mockito", "mockito-core", "3.7.7")
 }
 
+/*
 java {
     sourceCompatibility = JavaVersion.VERSION_22
     targetCompatibility = JavaVersion.VERSION_22
@@ -56,6 +57,7 @@ java {
     withSourcesJar()
     withJavadocJar()
 }
+*/
 
 // carbon copy from Nolij/ZSON, yea i like this blackmagik
 // (oh that's a camellia reference lol)

@@ -19,6 +19,7 @@ import java.util.Optional;
  *  - If a child is specified, any nodes in the child will be appended to the existing child if one exists. If none exists,
  *    the child will be set to the provided child.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class AddMutation implements Mutation {
     private final List<KDLValue<?>> args;
     private final Map<Integer, KDLValue<?>> positionalArgs;

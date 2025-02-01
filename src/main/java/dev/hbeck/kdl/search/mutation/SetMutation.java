@@ -22,6 +22,7 @@ import java.util.Optional;
  *  - If any properties are specified in props, the key=value pair will be set on the node, or added if it wasn't present.
  *  - If child is provided, the current child will be discarded and replaced be the provided one.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class SetMutation implements Mutation {
     private final Optional<String> identifier;
     private final Map<Integer, KDLValue<?>> positionalArgs;
